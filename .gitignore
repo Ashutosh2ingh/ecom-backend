@@ -1,0 +1,9 @@
+# Ignore SQLite database files
+*.sqlite3
+*.sqlite3-journal
+
+# Ignore virtual environment
+venv/
+
+# Ignore media files
+media/

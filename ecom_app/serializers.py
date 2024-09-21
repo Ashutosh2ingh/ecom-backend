@@ -29,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
         return value
     
     def validate_city(self, value):
-        if not value.isalpha():
+        if not value.isalpha(): 
             raise serializers.ValidationError("City should only contain alphabets.")
         return value
     

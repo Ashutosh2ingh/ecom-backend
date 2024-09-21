@@ -8,7 +8,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
 from .models import Customer, HeroSlider, Categories, Product, ProductVariation, Cart
-from .serializers import UserSerializer, HeroSliderSerializer, CategorySerializer, ProductSerializer
+from .serializers import UserSerializer, HeroSliderSerializer, CategorySerializer, ProductSerializer, CartSerializer
 
 # Create Register View
 class RegisterView(APIView):
@@ -216,3 +216,13 @@ class AddToCartView(APIView):
                 'quantity': cart_item.quantity
             }
         }, status=status.HTTP_200_OK)
+
+
+# Cart View
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+class CarttView(generics.ListAPIView):
+    serializer_class = CartSerializer
+
+    def get_queryset(self):
+        return Cart.objects.filter(customer=self.request.user)

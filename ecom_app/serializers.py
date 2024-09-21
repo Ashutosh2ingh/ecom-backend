@@ -1,6 +1,6 @@
 import re
 from rest_framework import serializers
-from .models import Customer, HeroSlider, Categories, Product, ProductVariation, ProductImage, Color, Size, ProductOffer
+from .models import Customer, HeroSlider, Categories, Product, ProductVariation, ProductImage, Color, Size, ProductOffer, Cart
 
 # Create your serializers here.
 class UserSerializer(serializers.ModelSerializer):
@@ -90,10 +90,12 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductVariationSerializer(serializers.ModelSerializer):
     color = ColorSerializer()
     size = SizeSerializer()
+    product_name = serializers.CharField(source='product.product_name', read_only=True)
+    product_image = serializers.CharField(source='product.list_image1', read_only=True)
 
     class Meta:
         model = ProductVariation
-        fields = ['id', 'color', 'size', 'original_price', 'discount_price', 'stock']
+        fields = ['id', 'color', 'size', 'original_price', 'discount_price', 'stock', 'product_name', 'product_image']
 
 # Product Offer Serializer  
 class ProductOfferSerializer(serializers.ModelSerializer):
@@ -116,3 +118,12 @@ class ProductSerializer(serializers.ModelSerializer):
         color = self.context.get('color')
         color_images = ProductImage.objects.filter(product=obj, color=color)
         return ProductImageSerializer(color_images, many=True).data
+    
+
+# Cart Serializer
+class CartSerializer(serializers.ModelSerializer):
+    product = ProductVariationSerializer()
+
+    class Meta:
+        model = Cart
+        fields = '__all__'

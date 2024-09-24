@@ -92,10 +92,11 @@ class ProductVariationSerializer(serializers.ModelSerializer):
     size = SizeSerializer()
     product_name = serializers.CharField(source='product.product_name', read_only=True)
     product_image = serializers.CharField(source='product.list_image1', read_only=True)
+    short_description = serializers.CharField(source='product.short_description', read_only=True)
 
     class Meta:
         model = ProductVariation
-        fields = ['id', 'color', 'size', 'original_price', 'discount_price', 'stock', 'product_name', 'product_image']
+        fields = ['id', 'color', 'size', 'original_price', 'discount_price', 'stock', 'product_name', 'product_image', 'short_description']
 
 # Product Offer Serializer  
 class ProductOfferSerializer(serializers.ModelSerializer):

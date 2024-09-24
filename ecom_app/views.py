@@ -226,3 +226,27 @@ class CarttView(generics.ListAPIView):
 
     def get_queryset(self):
         return Cart.objects.filter(customer=self.request.user)
+
+
+# Delete Item from Cart View
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+class DeleteFromCartView(APIView):
+    def delete(self, request, product_variation_id, *args, **kwargs):
+        user = request.user
+        
+        try:
+            cart_item = Cart.objects.get(customer=user, product=product_variation_id)
+        except Cart.DoesNotExist:
+            return Response({
+                'status': 404,
+                'message': 'Item not found in Cart.'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        cart_item.delete()
+
+        return Response({
+            'status': 200,
+            'message': 'Item removed from cart successfully.'
+        }, status=status.HTTP_200_OK)
+

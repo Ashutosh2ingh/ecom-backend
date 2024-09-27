@@ -16,7 +16,7 @@ class CategoriesAdmin(admin.ModelAdmin):
 # Register Product
 @admin.register(Product)
 class ProductsAdmin(admin.ModelAdmin):
-    list_display = ('sku', 'product_name')
+    list_display = ('id','sku', 'product_name')
 
 # Register Color
 @admin.register(Color)
@@ -46,7 +46,7 @@ class ProductOfferAdmin(admin.ModelAdmin):
 # Register Cart
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'product', 'quantity')
+    list_display = ('id', 'customer', 'product', 'quantity')
 
 # Register Hero Slider
 @admin.register(HeroSlider)

@@ -228,25 +228,79 @@ class CarttView(generics.ListAPIView):
         return Cart.objects.filter(customer=self.request.user)
 
 
-# Delete Item from Cart View
+# Update Cart View
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-class DeleteFromCartView(APIView):
-    def delete(self, request, product_variation_id, *args, **kwargs):
+class UpdateCartView(APIView):
+    def post(self, request, *args, **kwargs):
         user = request.user
+        product_variation_id = request.data.get('product_variation_id')
+        quantity = request.data.get('quantity')
+
+        if not product_variation_id:
+            return Response({
+                'status': '400',
+                'message': 'Product variation ID is required.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if quantity is None:
+            return Response({
+                'status': '400',
+                'message': 'Quantity is required.'
+            }, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            cart_item = Cart.objects.get(customer=user, product=product_variation_id)
-        except Cart.DoesNotExist:
+            product_variation = ProductVariation.objects.get(id=product_variation_id)
+        except ProductVariation.DoesNotExist:
             return Response({
-                'status': 404,
-                'message': 'Item not found in Cart.'
+                'status': '404',
+                'message': 'Product variation not found.'
             }, status=status.HTTP_404_NOT_FOUND)
 
-        cart_item.delete()
+        try:
+            cart_item = Cart.objects.get(customer=user, product=product_variation)
+        except Cart.DoesNotExist:
+            return Response({
+                'status': '404',
+                'message': 'Cart item not found for the given user and product.'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        if quantity <= 0:
+            cart_item.delete()  # If quantity is zero or less, remove the item from the cart
+            return Response({
+                'status': '200',
+                'message': 'Item removed from cart as quantity'
+            }, status=status.HTTP_200_OK)
+
+        cart_item.quantity = quantity
+        cart_item.save()
 
         return Response({
             'status': 200,
-            'message': 'Item removed from cart successfully.'
+            'message': 'Cart item updated successfully.',
+            'cart_item': {
+                'product': cart_item.product.id,
+                'quantity': cart_item.quantity
+            }
         }, status=status.HTTP_200_OK)
+    
 
+# Delete Item from Cart View
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])  
+class DeleteFromCartView(APIView):
+
+    def delete(self, request, item_id, *args, **kwargs):
+        user = request.user
+        try:
+            cart_item = Cart.objects.get(id=item_id, customer=user)
+            cart_item.delete()
+            return Response({
+                "status": 200,
+                "message": "Cart item deleted successfully."
+            }, status=status.HTTP_200_OK)
+        except Cart.DoesNotExist:
+            return Response({
+                "status": 404,
+                "message": "Cart item not found."
+            }, status=status.HTTP_404_NOT_FOUND)

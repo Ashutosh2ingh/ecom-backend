@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
-from ecom_app.views import RegisterView,LoginView,LogoutView,ProfileView,ChangePasswordView,HeroSliderView,CategoryView,ProductView,ProductDetailView,AddToCartView,CarttView,DeleteFromCartView,UpdateCartView
+from ecom_app.views import RegisterView,LoginView,LogoutView,ProfileView,ChangePasswordView,HeroSliderView,CategoryView,ProductView,ProductDetailView,AddToCartView,CarttView,DeleteFromCartView,UpdateCartView,ShipmentAddressView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -19,4 +19,5 @@ urlpatterns = [
     path('cart/', CarttView.as_view(), name='cart'),
     path('cart/update/', UpdateCartView.as_view(), name='update_cart'),
     path('cart/delete/<int:item_id>/', DeleteFromCartView.as_view(), name='delete-cart-item'),
+    path('shipment-address/', ShipmentAddressView.as_view(), name='shipment-address'),
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

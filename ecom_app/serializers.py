@@ -1,6 +1,6 @@
 import re
 from rest_framework import serializers
-from .models import Customer, HeroSlider, Categories, Product, ProductVariation, ProductImage, Color, Size, ProductOffer, Cart
+from .models import Customer, HeroSlider, Categories, Product, ProductVariation, ProductImage, Color, Size, ProductOffer, Cart, ShipmentAddress
 
 # Create your serializers here.
 class UserSerializer(serializers.ModelSerializer):
@@ -127,4 +127,11 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
+        fields = '__all__'
+
+
+# Shipment Address
+class ShipmentAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShipmentAddress
         fields = '__all__'

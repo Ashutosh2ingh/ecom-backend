@@ -7,8 +7,8 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
-from .models import Customer, HeroSlider, Categories, Product, ProductVariation, Cart
-from .serializers import UserSerializer, HeroSliderSerializer, CategorySerializer, ProductSerializer, CartSerializer
+from .models import Customer, HeroSlider, Categories, Product, ProductVariation, Cart, ShipmentAddress
+from .serializers import UserSerializer, HeroSliderSerializer, CategorySerializer, ProductSerializer, CartSerializer, ShipmentAddressSerializer
 
 # Create Register View
 class RegisterView(APIView):
@@ -304,3 +304,35 @@ class DeleteFromCartView(APIView):
                 "status": 404,
                 "message": "Cart item not found."
             }, status=status.HTTP_404_NOT_FOUND)
+
+
+# Shipment Address View
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])  
+class ShipmentAddressView(APIView):
+
+    def get(self, request):
+        try:
+            address = ShipmentAddress.objects.get(customer=request.user)
+            serializer = ShipmentAddressSerializer(address)
+            return Response(serializer.data)
+        except ShipmentAddress.DoesNotExist:
+            return Response({"message": "No shipment address found."}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        data = request.data.copy()
+        data['customer'] = request.user.id  
+
+        try:
+            address = ShipmentAddress.objects.get(customer=request.user)
+            serializer = ShipmentAddressSerializer(address, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ShipmentAddress.DoesNotExist:
+            serializer = ShipmentAddressSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

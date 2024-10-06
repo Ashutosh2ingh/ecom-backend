@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer,Categories,Product,Color,Size,ProductImage,ProductOffer,Cart,HeroSlider,CategorySlider,ProductVariation
+from .models import Customer,Categories,Product,Color,Size,ProductImage,ProductOffer,Cart,HeroSlider,CategorySlider,ProductVariation,ShipmentAddress
 
 # Register your models here.
 
@@ -57,3 +57,8 @@ class HeroSliderAdmin(admin.ModelAdmin):
 @admin.register(CategorySlider)
 class CategorySliderAdmin(admin.ModelAdmin):
     list_display = ('title', 'image')
+
+# Register Category Slider
+@admin.register(ShipmentAddress)
+class ShipmentAddressAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'email', 'phone')

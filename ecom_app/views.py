@@ -317,7 +317,9 @@ class ShipmentAddressView(APIView):
             serializer = ShipmentAddressSerializer(address)
             return Response(serializer.data)
         except ShipmentAddress.DoesNotExist:
-            return Response({"message": "No shipment address found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "No shipment address found."}, 
+                status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         data = request.data.copy()
@@ -328,11 +330,29 @@ class ShipmentAddressView(APIView):
             serializer = ShipmentAddressSerializer(address, data=data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {
+                        "message":"Shipment Details Updated Successfully",
+                        "data":serializer.data, 
+                    },
+                    status=status.HTTP_200_OK
+                )
+            return Response(
+                error=serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         except ShipmentAddress.DoesNotExist:
             serializer = ShipmentAddressSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {
+                        "message":"Shipment Details Created Successfully",
+                        "data":serializer.data, 
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+            return Response(
+                error=serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST
+            )

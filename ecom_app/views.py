@@ -7,8 +7,8 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
-from .models import Customer, HeroSlider, Categories, Product, ProductVariation, Cart, ShipmentAddress
-from .serializers import UserSerializer, HeroSliderSerializer, CategorySerializer, ProductSerializer, CartSerializer, ShipmentAddressSerializer
+from .models import Customer, HeroSlider, Categories, Product, ProductVariation, Cart, ShipmentAddress, Payment
+from .serializers import UserSerializer, HeroSliderSerializer, CategorySerializer, ProductSerializer, CartSerializer, ShipmentAddressSerializer, PaymentSerializer
 
 # Create Register View
 class RegisterView(APIView):
@@ -356,3 +356,49 @@ class ShipmentAddressView(APIView):
                 error=serializer.errors, 
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+
+# Payment View
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+class PaymentView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        data = request.data
+
+        amount = data.get('amount')
+        payment_status = data.get('payment_status', 'Pending')
+        razorpay_payment_id = data.get('razorpay_payment_id')
+
+        if not amount:
+            return Response({
+                'status': '400',
+                'message': 'Amount is required.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if not razorpay_payment_id:
+            return Response({
+                'status': '400',
+                'message': 'Razorpay payment ID is required.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        payment, created = Payment.objects.get_or_create(
+            customer=user,
+            amount=amount,
+            payment_status=payment_status,
+            razorpay_payment_id=razorpay_payment_id,
+        )
+
+        if not created:
+            return Response({
+                'status': '400',
+                'message': 'Payment already exists.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = PaymentSerializer(payment)
+        return Response({
+            'status': 200,
+            'message': 'Payment created successfully.',
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED)

@@ -1,6 +1,6 @@
 import re
 from rest_framework import serializers
-from .models import Customer, HeroSlider, Categories, Product, ProductVariation, ProductImage, Color, Size, ProductOffer, Cart, ShipmentAddress
+from .models import Customer, HeroSlider, Categories, Product, ProductVariation, ProductImage, Color, Size, ProductOffer, Cart, ShipmentAddress, Payment, Order
 
 # Create your serializers here.
 class UserSerializer(serializers.ModelSerializer):
@@ -130,8 +130,25 @@ class CartSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# Shipment Address
+# Shipment Address Serializer
 class ShipmentAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShipmentAddress
         fields = '__all__'
+
+
+# Payment Serializer
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = '__all__'
+
+
+# Order Serializer
+class OrderSerializer(serializers.ModelSerializer):
+    product_variation = ProductVariationSerializer()
+    payment = PaymentSerializer()
+
+    class Meta:
+        model = Order
+        fields = ['order_id', 'customer', 'payment', 'product_variation', 'quantity', 'total_amount', 'order_status', 'order_date']

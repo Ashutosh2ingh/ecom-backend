@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer,Categories,Product,Color,Size,ProductImage,ProductOffer,Cart,HeroSlider,CategorySlider,ProductVariation,ShipmentAddress
+from .models import Customer,Categories,Product,Color,Size,ProductImage,ProductOffer,Cart,HeroSlider,CategorySlider,ProductVariation,ShipmentAddress,Payment,Order
 
 # Register your models here.
 
@@ -62,3 +62,13 @@ class CategorySliderAdmin(admin.ModelAdmin):
 @admin.register(ShipmentAddress)
 class ShipmentAddressAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'email', 'phone')
+
+# Register Category Slider
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('razorpay_payment_id', 'payment_date', 'amount', 'payment_status')
+
+# Register Category Slider
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('product_variation', 'quantity', 'total_amount')

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 # Create your models here.
 
@@ -176,3 +177,57 @@ class ShipmentAddress(models.Model):
 
     def __str__(self):
         return f'Shipping Address for {self.customer.first_name} {self.customer.last_name}'
+
+
+# Order Model
+class Payment(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_status = models.CharField(max_length=20, default='Pending')
+    razorpay_payment_id = models.CharField(max_length=255, unique=True)
+    payment_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Payment {self.razorpay_payment_id} for {self.customer.first_name}'
+
+
+# Order Model
+class Order(models.Model):
+    order_id = models.AutoField(primary_key=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
+    product_variation = models.ForeignKey(ProductVariation, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    order_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('Processing', 'Processing'),
+            ('Shipped', 'Shipped'),
+            ('Delivered', 'Delivered'),
+            ('Cancelled', 'Cancelled'),
+        ],
+        default='Pending'
+    )
+    order_date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'Order {self.order_id} by {self.customer.email}'
+    
+
+        
+# class Payment(models.Model):
+#     payment_id = models.AutoField(primary_key=True)
+#     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+#     payment_date = models.DateTimeField(default=timezone.now, verbose_name="Order Date")
+#     total_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0.0)
+#     payment_mode = models.CharField(
+#         max_length= 40,
+#         choices=[
+#             ('UPI', 'UPI'),
+#             ('COD', 'COD'),
+#         ]
+#     )
+
+#     def __str__(self):
+#         return str(self.payment_id)

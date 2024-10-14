@@ -31,7 +31,7 @@ class SizeAdmin(admin.ModelAdmin):
 # Register Product Variation
 @admin.register(ProductVariation)
 class ProductVariationAdmin(admin.ModelAdmin):
-    list_display = ('product', 'color', 'size', 'discount_price', 'stock')
+    list_display = ('id', 'product', 'color', 'size', 'discount_price', 'stock')
 
 # Register Product Image
 @admin.register(ProductImage)

@@ -7,8 +7,8 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
-from .models import Customer, HeroSlider, Categories, Product, ProductVariation, Cart, ShipmentAddress, Payment
-from .serializers import UserSerializer, HeroSliderSerializer, CategorySerializer, ProductSerializer, CartSerializer, ShipmentAddressSerializer, PaymentSerializer
+from .models import Customer, HeroSlider, Categories, Product, ProductVariation, Cart, ShipmentAddress, Payment, Order
+from .serializers import UserSerializer, HeroSliderSerializer, CategorySerializer, ProductSerializer, CartSerializer, ShipmentAddressSerializer, PaymentSerializer, OrderSerializer
 
 # Create Register View
 class RegisterView(APIView):
@@ -400,5 +400,87 @@ class PaymentView(APIView):
         return Response({
             'status': 200,
             'message': 'Payment created successfully.',
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED)
+  
+
+# Order View
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+class CreateOrderView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        data = request.data
+
+        payment_id = data.get('payment_id')
+        product_variation_id = data.get('product_variation_id')
+        quantity = data.get('quantity')
+
+        if not payment_id:
+            return Response({
+                'status': '400',
+                'message': 'Payment ID is required.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if not product_variation_id:
+            return Response({
+                'status': '400',
+                'message': 'Product variation ID is required.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if not quantity:
+            return Response({
+                'status': '400',
+                'message': 'Quantity is required.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            payment = Payment.objects.get(razorpay_payment_id=payment_id, customer=user)
+        except Payment.DoesNotExist:
+            return Response({
+                'status': '404',
+                'message': 'Payment not found.'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            product_variation = ProductVariation.objects.get(id=product_variation_id)
+        except ProductVariation.DoesNotExist:
+            return Response({
+                'status': '404',
+                'message': 'Product variation not found.'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        if product_variation.stock < quantity:
+            return Response({
+                'status': '400',
+                'message': 'Not enough stock available.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        order, created = Order.objects.get_or_create(
+            customer=user,
+            payment=payment,
+            product_variation=product_variation,
+            quantity=quantity,
+            defaults={
+                'total_amount': product_variation.discount_price * quantity,
+                'order_status': 'Processing'
+            }
+        )
+
+        if not created:
+            return Response({
+                'status': '400',
+                'message': 'Order already exists.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update stock
+        product_variation.stock -= quantity
+        product_variation.save()
+
+        serializer = OrderSerializer(order)
+        return Response({
+            'status': 200,
+            'message': 'Order Placed successfully.',
             'data': serializer.data
         }, status=status.HTTP_201_CREATED)

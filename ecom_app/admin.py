@@ -66,9 +66,9 @@ class ShipmentAddressAdmin(admin.ModelAdmin):
 # Register Category Slider
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ('razorpay_payment_id', 'payment_date', 'amount', 'payment_status')
+    list_display = ('id', 'razorpay_payment_id', 'payment_date', 'amount', 'payment_status')
 
 # Register Category Slider
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('product_variation', 'quantity', 'total_amount')
+    list_display = ( 'product_variation', 'quantity', 'total_amount')

@@ -213,21 +213,3 @@ class Order(models.Model):
 
     def __str__(self):
         return f'Order {self.order_id} by {self.customer.email}'
-    
-
-        
-# class Payment(models.Model):
-#     payment_id = models.AutoField(primary_key=True)
-#     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-#     payment_date = models.DateTimeField(default=timezone.now, verbose_name="Order Date")
-#     total_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0.0)
-#     payment_mode = models.CharField(
-#         max_length= 40,
-#         choices=[
-#             ('UPI', 'UPI'),
-#             ('COD', 'COD'),
-#         ]
-#     )
-
-#     def __str__(self):
-#         return str(self.payment_id)

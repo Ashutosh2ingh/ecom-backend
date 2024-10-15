@@ -293,7 +293,8 @@ class DeleteFromCartView(APIView):
     def delete(self, request, item_id, *args, **kwargs):
         user = request.user
         try:
-            cart_item = Cart.objects.get(id=item_id, customer=user)
+            # cart_item = Cart.objects.get(id=item_id, customer=user)
+            cart_item = Cart.objects.get(product=item_id, customer=user)
             cart_item.delete()
             return Response({
                 "status": 200,

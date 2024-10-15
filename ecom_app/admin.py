@@ -71,4 +71,4 @@ class PaymentAdmin(admin.ModelAdmin):
 # Register Category Slider
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ( 'product_variation', 'quantity', 'total_amount')
+    list_display = ('order_id', 'product_variation', 'quantity', 'total_amount')

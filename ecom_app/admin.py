@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer,Categories,Product,Color,Size,ProductImage,ProductOffer,Cart,HeroSlider,CategorySlider,ProductVariation,ShipmentAddress,Payment,Order
+from .models import Customer,Categories,Product,Color,Size,ProductImage,ProductOffer,HeroSlider,CategorySlider,ProductVariation,ShipmentAddress,Cart,Payment,Order
 
 # Register your models here.
 

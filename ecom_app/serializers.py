@@ -1,6 +1,6 @@
 import re
 from rest_framework import serializers
-from .models import Customer, HeroSlider, Categories, Product, ProductVariation, ProductImage, Color, Size, ProductOffer, Cart, ShipmentAddress, Payment, Order
+from .models import Customer, HeroSlider, Categories, Product, ProductVariation, ProductImage, Color, Size, ProductOffer, ShipmentAddress, Cart, Payment, Order
 
 # Create your serializers here.
 class UserSerializer(serializers.ModelSerializer):

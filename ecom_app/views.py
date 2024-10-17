@@ -7,8 +7,8 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
-from .models import Customer, HeroSlider, Categories, Product, ProductVariation, Cart, ShipmentAddress, Payment, Order
-from .serializers import UserSerializer, HeroSliderSerializer, CategorySerializer, ProductSerializer, CartSerializer, ShipmentAddressSerializer, PaymentSerializer, OrderSerializer
+from .models import Customer, HeroSlider, Categories, Product, ProductVariation, ShipmentAddress, Cart, Payment, Order
+from .serializers import UserSerializer, HeroSliderSerializer, CategorySerializer, ProductSerializer, ShipmentAddressSerializer, CartSerializer, PaymentSerializer, OrderSerializer
 
 # Create Register View
 class RegisterView(APIView):

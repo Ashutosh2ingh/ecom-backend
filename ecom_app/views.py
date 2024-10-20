@@ -410,6 +410,16 @@ class PaymentView(APIView):
 @permission_classes([IsAuthenticated])
 class CreateOrderView(APIView):
 
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        orders = Order.objects.filter(customer=user)
+        serializer = OrderSerializer(orders, many=True)
+        return Response({
+            'status': 200,
+            'message': 'Orders retrieved successfully.',
+            'data': serializer.data
+        }, status=status.HTTP_200_OK)
+
     def post(self, request, *args, **kwargs):
         user = request.user
         data = request.data
@@ -485,3 +495,25 @@ class CreateOrderView(APIView):
             'message': 'Order Placed successfully.',
             'data': serializer.data
         }, status=status.HTTP_201_CREATED)
+    
+
+# Get Order Detail View
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+class GetOrderDetailView(APIView):
+    def get(self, request, order_id, *args, **kwargs):
+        user = request.user
+        try:
+            # Fetch the order for the authenticated user
+            order = Order.objects.get(order_id=order_id, customer=user)
+            serializer = OrderSerializer(order)
+            return Response({
+                'status': 200,
+                'message': 'Order retrieved successfully.',
+                'data': serializer.data
+            }, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
+            return Response({
+                'status': 404,
+                'message': 'Order not found.'
+            }, status=status.HTTP_404_NOT_FOUND)

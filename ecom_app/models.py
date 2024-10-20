@@ -210,6 +210,15 @@ class Order(models.Model):
         default='Pending'
     )
     order_date = models.DateTimeField(default=timezone.now)
+    order_status_date = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        # Update order_status_date if order_status is changed
+        if self.pk is not None:  # Check if the instance already exists
+            original = Order.objects.get(pk=self.pk)
+            if original.order_status != self.order_status:
+                self.order_status_date = timezone.now()
+        super(Order, self).save(*args, **kwargs)
 
     def __str__(self):
         return f'Order {self.order_id} by {self.customer.email}'

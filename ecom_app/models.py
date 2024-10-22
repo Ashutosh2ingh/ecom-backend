@@ -204,6 +204,7 @@ class Order(models.Model):
         choices=[
             ('Processing', 'Processing'),
             ('Shipped', 'Shipped'),
+            ('Out For Delivery', 'Out For Delivery'),
             ('Delivered', 'Delivered'),
             ('Cancelled', 'Cancelled'),
         ],
